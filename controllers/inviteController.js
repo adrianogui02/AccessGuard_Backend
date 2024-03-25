@@ -29,14 +29,26 @@ exports.createInvite = async (req, res) => {
   }
 };
 
-exports.getInviteByCode = async (req, res) => {
+// Função para obter um convite por ID
+exports.getInviteById = async (req, res) => {
   try {
-    const { code } = req.params;
-    const invite = await Convite.findOne({ codigoQR: code });
+    const { id } = req.params;
+    const invite = await Convite.findById(id);
     if (!invite) {
       return res.status(404).json({ message: "Invite not found" });
     }
     res.json(invite);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+// Função para obter todos os convites criados por um usuário específico
+exports.getInvitesByUser = async (req, res) => {
+  try {
+    const { userId } = req.params;
+    const invites = await Convite.find({ criador: userId });
+    res.json(invites);
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
