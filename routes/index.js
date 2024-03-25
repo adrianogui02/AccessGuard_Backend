@@ -7,7 +7,7 @@ const inviteRoutes = require("./inviteRoutes");
 const router = express.Router();
 
 // Use as rotas do usuário
-//router.use("/users", userRoutes);
+router.use("/users", userRoutes);
 router.use("/invite", inviteRoutes);
 // Use outras rotas conforme necessário
 

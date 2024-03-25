@@ -1,12 +1,18 @@
-// models/Invite.js
 const mongoose = require("mongoose");
 
-const inviteSchema = new mongoose.Schema({
-  code: { type: String, required: true },
-  qrCodeUrl: { type: String, required: true },
-  createdBy: { type: String, required: true },
-  createdAt: { type: Date, default: Date.now },
-  validUntil: { type: Date, required: true },
+const conviteSchema = new mongoose.Schema({
+  codigoQR: { type: String, required: true, unique: true },
+  urlQRCode: { type: String, required: true }, // URL que leva ao QR code
+  validoAte: { type: Date, required: true },
+  criadoEm: { type: Date, default: Date.now }, // Data de criação do convite
+  criador: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "User",
+    required: true,
+  },
+  numeroTelefoneConvidado: { type: String }, // Número de telefone da pessoa convidada
 });
 
-module.exports = mongoose.model("Invite", inviteSchema);
+const Convite = mongoose.model("Convite", conviteSchema);
+
+module.exports = Convite;
