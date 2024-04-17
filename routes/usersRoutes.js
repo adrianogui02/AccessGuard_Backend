@@ -3,13 +3,13 @@ const router = express.Router();
 const UserController = require("../controllers/usersController");
 
 // Rota para criar um novo usuário
-router.post("/user", UserController.createUser);
+router.post("/create", UserController.createUser);
 
 // Rota para listar todos os usuários
 router.get("/user", UserController.getAllUsers);
 
 // Rota para obter detalhes de um usuário específico por ID
-router.get("/user/:id", UserController.getUserById);
+router.get("/getByEmail/:email", UserController.getUserByEmail);
 
 // Rota para atualizar os detalhes de um usuário
 router.put("/user/:id", UserController.updateUser);
