@@ -1,9 +1,19 @@
 const Convite = require("../models/invite");
 const qr = require("qrcode");
+const { v4: uuidv4 } = require("uuid"); // Importa a função para gerar UUID
 
 exports.createInvite = async (req, res) => {
   try {
-    const { codigoQR, validoAte, criador, numeroTelefoneConvidado } = req.body;
+    const {
+      codigoQR,
+      validoAte,
+      criador,
+      numeroTelefoneConvidado,
+      nomeConvidado,
+    } = req.body;
+
+    // Gera um UUID para o convite
+    const idConvite = uuidv4();
 
     // Gera o QR code com base no código do convite
     qr.toDataURL(codigoQR, async (err, url) => {
@@ -14,14 +24,16 @@ exports.createInvite = async (req, res) => {
 
       // Cria o convite no banco de dados e salva a URL do QR code
       const invite = await Convite.create({
+        uuid: idConvite, // Use o UUID gerado como identificador do convite
         codigoQR,
         urlQRCode: url,
         validoAte,
         criador,
         numeroTelefoneConvidado,
+        nomeConvidado,
       });
 
-      // Retorna o convite, incluindo a URL do QR code, como resposta JSON
+      // Retorna o convite, incluindo a URL do QR code e o UUID, como resposta JSON
       res.status(201).json(invite);
     });
   } catch (error) {
@@ -49,6 +61,19 @@ exports.getInvitesByUser = async (req, res) => {
     const { userId } = req.params;
     const invites = await Convite.find({ criador: userId });
     res.json(invites);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+exports.getInviteByUUID = async (req, res) => {
+  try {
+    const { uuid } = req.params;
+    const convite = await Convite.findOne({ uuid: uuid });
+    if (!convite) {
+      return res.status(404).json({ message: "Convite não encontrado." });
+    }
+    res.json(convite);
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
