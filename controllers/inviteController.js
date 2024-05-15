@@ -8,7 +8,7 @@ exports.createInvite = async (req, res) => {
       req.body;
 
     const uuid = uuidv4(); // Gera um UUID para o convite
-    const baseQRCodeURL = "https://accessguard.vercel.app/QRCode/Success/";
+    const baseQRCodeURL = process.env.REDIRECT_URL;
     const fullQRCodeURL = baseQRCodeURL + uuid; // URL completa para o QR code
 
     // Gera o QR code com o URL completo
@@ -80,15 +80,11 @@ exports.desactiveInvite = async (req, res) => {
   try {
     const { uuid } = req.params;
 
-    // Cria a URL para o QR Code desativado
-    const failedQRCodeUrl = `https://accessguard.vercel.app/QRCode/Failed/${uuid}`;
-
     // Atualiza o status no banco de dados e o URL do código QR
     const updated = await Convite.findOneAndUpdate(
       { uuid: uuid }, // Filtro para encontrar o documento
       {
         ativo: false, // Desativa o convite
-        codigoQR: failedQRCodeUrl, // Atualiza o código QR
       },
       { new: true } // Opção para retornar o documento atualizado
     );
