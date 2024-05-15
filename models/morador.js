@@ -3,7 +3,8 @@ const mongoose = require("mongoose");
 const moradorSchema = new mongoose.Schema({
   nome: { type: String, required: true },
   email: { type: String },
-  relacionamento: { type: String }, // Por exemplo, 'Familiar', 'Amigo', etc.
+  celular: { type: String, required: true },
+  foto: { type: String }, // Salva o caminho da imagem no servidor
   usuario: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "User",
