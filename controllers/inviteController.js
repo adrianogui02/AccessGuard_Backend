@@ -80,10 +80,16 @@ exports.desactiveInvite = async (req, res) => {
   try {
     const { uuid } = req.params;
 
-    // Atualiza o status no banco de dados
+    // Cria a URL para o QR Code desativado
+    const failedQRCodeUrl = `https://accessguard.vercel.app/QRCode/Failed/${uuid}`;
+
+    // Atualiza o status no banco de dados e o URL do código QR
     const updated = await Convite.findOneAndUpdate(
       { uuid: uuid }, // Filtro para encontrar o documento
-      { ativo: false }, // Campos para atualizar
+      {
+        ativo: false, // Desativa o convite
+        codigoQR: failedQRCodeUrl, // Atualiza o código QR
+      },
       { new: true } // Opção para retornar o documento atualizado
     );
 
