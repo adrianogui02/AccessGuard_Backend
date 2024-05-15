@@ -4,39 +4,36 @@ const { v4: uuidv4 } = require("uuid"); // Importa a função para gerar UUID
 
 exports.createInvite = async (req, res) => {
   try {
-    const {
-      codigoQR,
-      validoAte,
-      criador,
-      numeroTelefoneConvidado,
-      nomeConvidado,
-    } = req.body;
+    const { validoAte, criador, numeroTelefoneConvidado, nomeConvidado } =
+      req.body;
 
-    // Gera um UUID para o convite
-    const idConvite = uuidv4();
+    const uuid = uuidv4(); // Gera um UUID para o convite
+    const baseQRCodeURL = "https://accessguard.vercel.app/QRCode/Success/";
+    const fullQRCodeURL = baseQRCodeURL + uuid; // URL completa para o QR code
 
-    // Gera o QR code com base no código do convite
-    qr.toDataURL(codigoQR, async (err, url) => {
+    // Gera o QR code com o URL completo
+    qr.toDataURL(fullQRCodeURL, async (err, url) => {
       if (err) {
         console.error("Error generating QR code:", err);
         return res.status(500).json({ message: "Error generating QR code" });
       }
 
-      // Cria o convite no banco de dados e salva a URL do QR code
+      // Cria o convite no banco de dados
       const invite = await Convite.create({
-        uuid: idConvite, // Use o UUID gerado como identificador do convite
-        codigoQR,
+        uuid,
+        codigoQR: fullQRCodeURL, // Salva o URL completo no campo codigoQR
         urlQRCode: url,
         validoAte,
         criador,
-        numeroTelefoneConvidado,
         nomeConvidado,
+        numeroTelefoneConvidado,
+        ativo: true,
       });
 
-      // Retorna o convite, incluindo a URL do QR code e o UUID, como resposta JSON
       res.status(201).json(invite);
     });
   } catch (error) {
+    console.error("Failed to create invite:", error);
     res.status(500).json({ message: error.message });
   }
 };
@@ -76,5 +73,27 @@ exports.getInviteByUUID = async (req, res) => {
     res.json(convite);
   } catch (error) {
     res.status(500).json({ message: error.message });
+  }
+};
+
+exports.desactiveInvite = async (req, res) => {
+  try {
+    const { uuid } = req.params;
+
+    // Atualiza o status no banco de dados
+    const updated = await Convite.findOneAndUpdate(
+      { uuid: uuid }, // Filtro para encontrar o documento
+      { ativo: false }, // Campos para atualizar
+      { new: true } // Opção para retornar o documento atualizado
+    );
+
+    if (!updated) {
+      return res.status(404).send({ message: "Convite não encontrado!" });
+    }
+
+    res.send({ message: "QR Code desativado com sucesso!", convite: updated });
+  } catch (error) {
+    console.error("Erro ao desativar QR Code:", error);
+    res.status(500).send({ error: "Erro ao desativar QR Code" });
   }
 };

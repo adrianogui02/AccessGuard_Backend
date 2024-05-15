@@ -2,18 +2,18 @@ const mongoose = require("mongoose");
 
 const conviteSchema = new mongoose.Schema({
   codigoQR: { type: String, required: true },
-  urlQRCode: { type: String, required: true }, // URL que leva ao QR code
+  urlQRCode: { type: String, required: true },
   validoAte: { type: Date, required: true },
-  criadoEm: { type: Date, default: Date.now }, // Data de criação do convite
+  criadoEm: { type: Date, default: Date.now },
   criador: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "User",
     required: true,
   },
-  nomeConvidado: { type: String }, // Número de telefone da pessoa convidada
+  nomeConvidado: { type: String },
   numeroTelefoneConvidado: { type: String },
-  validade: { type: Boolean },
-  uuid: { type: String, required: true }, // Adiciona o campo UUID
+  ativo: { type: Boolean, default: true }, // Indica se o convite está ativo
+  uuid: { type: String, required: true },
 });
 
 const Convite = mongoose.model("Convite", conviteSchema);
