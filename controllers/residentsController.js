@@ -16,6 +16,15 @@ exports.addResident = async (req, res) => {
     res.status(400).send(error);
   }
 };
+// Obter todos os moradores
+exports.getAllResidents = async (req, res) => {
+  try {
+    const residents = await Morador.find({});
+    res.json(residents);
+  } catch (error) {
+    res.status(500).send({ message: "Erro ao buscar os moradores", error });
+  }
+};
 // Obter lista de moradores
 exports.getResidentsByUser = async (req, res) => {
   try {
